@@ -9,8 +9,8 @@ export default defineContentScript({
   allFrames: true,
   main() {
     const config = initializeConfig();
-    processTree(document.documentElement, config);
-    observeTree(document.documentElement, config);
+    processDomTree(document.documentElement, config);
+    observeDomChanges(config);
     listenForMessages(config);
     return cleanupContentScript;
   },
@@ -36,20 +36,20 @@ function initializeConfig(): TransformConfig {
   return currentConfig;
 }
 
-function processTree(root: Node, config: TransformConfig): void {
+function processDomTree(root: Node, config: TransformConfig): void {
   const walker = createTextWalker(root);
   let node: Node | null = walker.nextNode();
   while (node) {
     transformNodeText(node as Text, config);
     if (node.parentElement && node.parentElement.shadowRoot) {
-      processTree(node.parentElement.shadowRoot, config);
-      observeTree(node.parentElement.shadowRoot, config);
+      processDomTree(node.parentElement.shadowRoot, config);
+      observeRoot(node.parentElement.shadowRoot, config);
     }
     node = walker.nextNode();
   }
   if (root instanceof Element && root.shadowRoot) {
-    processTree(root.shadowRoot, config);
-    observeTree(root.shadowRoot, config);
+    processDomTree(root.shadowRoot, config);
+    observeRoot(root.shadowRoot, config);
   }
 }
 
@@ -57,38 +57,67 @@ function transformNodeText(node: Text, config: TransformConfig): void {
   if (!config.isEnabled || !node.nodeValue?.trim()) {
     return;
   }
-  switch (config.mode) {
-    case "wholePage":
-      node.nodeValue = node.nodeValue.toUpperCase()
-    break;
-    case "onHover":
-    case "showOriginalOnHover":
-    default:
-      break;
-  }
+  const originalValue = node.nodeValue;
+  const transformedValue = config.mode === "wholePage"
+    ? originalValue.toUpperCase()
+    : originalValue;
+  node.nodeValue = transformedValue;
 }
 
-function observeTree(root: Node, config: TransformConfig): void {
+function observeDomChanges(config: TransformConfig): void {
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      // Handle added nodes
+      if (mutation.addedNodes.length > 0) {
+        const affectedNodes = Array.from(mutation.addedNodes);
+        affectedNodes.forEach((node) => {
+          processDomTree(node, config);
+          if (node instanceof Element && node.shadowRoot) {
+            processDomTree(node.shadowRoot, config);
+            observeRoot(node.shadowRoot, config);
+          }
+        });
+      }
+      // Handle text content changes
+      if (mutation.type === "characterData" && mutation.target.nodeType === Node.TEXT_NODE) {
+        transformNodeText(mutation.target as Text, config);
+      }
+    });
+  });
+  observer.observe(document.documentElement, {
+    childList: true,
+    characterData: true,
+    subtree: true
+  });
+  mutationObservers.set(document.documentElement, observer);
+}
+
+function observeRoot(root: ShadowRoot, config: TransformConfig): void {
   if (mutationObservers.has(root)) {
     return;
   }
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
-      const affectedNodes = Array.from(mutation.addedNodes);
-      affectedNodes.forEach((node) => {
-        processTree(node, config);
-        if (node instanceof Element && node.shadowRoot) {
-          processTree(node.shadowRoot, config);
-          observeTree(node.shadowRoot, config);
-        }
-      });
-      if (mutation.target instanceof Element) {
-        processTree(mutation.target, config);
+      // Handle added nodes
+      if (mutation.addedNodes.length > 0) {
+        const affectedNodes = Array.from(mutation.addedNodes);
+        affectedNodes.forEach((node) => {
+          processDomTree(node, config);
+          if (node instanceof Element && node.shadowRoot) {
+            processDomTree(node.shadowRoot, config);
+            observeRoot(node.shadowRoot, config);
+          }
+        });
+      }
+      // Handle text content changes
+      if (mutation.type === "characterData" && mutation.target.nodeType === Node.TEXT_NODE) {
+        transformNodeText(mutation.target as Text, config);
       }
     });
   });
   observer.observe(root, {
     childList: true,
+    characterData: true,
     subtree: true
   });
   mutationObservers.set(root, observer);
@@ -97,16 +126,16 @@ function observeTree(root: Node, config: TransformConfig): void {
 function listenForMessages(config: TransformConfig): void {
   onMessage("modeChanged", (m) => {
     config.mode = validateMode(m.data);
-    processTree(document.documentElement, config);
+    processDomTree(document.documentElement, config);
   });
   onMessage("languageChanged", (m) => {
     config.language = validateLanguage(m.data);
-    processTree(document.documentElement, config);
+    processDomTree(document.documentElement, config);
   });
   onMessage("extensionToggled", (m) => {
     config.isEnabled = m.data;
     validateConfig(config);
-    processTree(document.documentElement, config);
+    processDomTree(document.documentElement, config);
   });
 }
 
