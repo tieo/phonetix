@@ -32,7 +32,7 @@ export default defineConfig({
         "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'",
     },
     ...(browser === 'firefox'
-      ? { browser_specific_settings: { gecko: { id: 'phonetix@extension' } } }
+      ? { browser_specific_settings: { gecko: { id: 'phonetix@tieo.github.io' } } }
       : {}),
   }),
   webExt: {
