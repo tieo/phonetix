@@ -298,6 +298,38 @@ class DebugSurfaceActivity : androidx.activity.ComponentActivity() {
                 io.github.tieo.phonetix.service.PhonetixAccessibilityService.gapMs =
                     i.getIntExtra("gapMs", 16).toLong()
             }
+            if (i.hasExtra("anchors")) {
+                io.github.tieo.phonetix.service.PhonetixAccessibilityService.ANCHORS =
+                    i.getIntExtra("anchors", 3)
+            }
+            if (i.hasExtra("mostlyGone")) {
+                io.github.tieo.phonetix.service.PhonetixAccessibilityService.MOSTLY_GONE =
+                    i.getIntExtra("mostlyGone", 50) / 100f
+            }
+            if (i.hasExtra("readMovingMs")) {
+                io.github.tieo.phonetix.service.PhonetixAccessibilityService.TURNOVER_MOVING_MS =
+                    i.getIntExtra("readMovingMs", 500).toLong()
+            }
+            if (i.hasExtra("anchorsWhenKnown")) {
+                io.github.tieo.phonetix.service.PhonetixAccessibilityService.ANCHORS_WHEN_KNOWN =
+                    i.getIntExtra("anchorsWhenKnown", 1)
+            }
+            if (i.hasExtra("coastGaps")) {
+                io.github.tieo.phonetix.service.MotionLayer.coastGaps =
+                    i.getIntExtra("coastGaps", 100) / 100f
+            }
+            if (i.hasExtra("fadeGaps")) {
+                io.github.tieo.phonetix.service.MotionLayer.fadeGaps =
+                    i.getIntExtra("fadeGaps", 200) / 100f
+            }
+            if (i.hasExtra("steadyGaps")) {
+                io.github.tieo.phonetix.service.MotionLayer.steadyGaps =
+                    i.getIntExtra("steadyGaps", 250) / 100f
+            }
+            if (i.hasExtra("predictFromFirst")) {
+                io.github.tieo.phonetix.service.MotionLayer.predictFromFirst =
+                    i.getIntExtra("predictFromFirst", 0) != 0
+            }
             if (i.hasExtra("leadMs")) {
                 io.github.tieo.phonetix.service.MotionLayer.leadMs =
                     i.getIntExtra("leadMs", 0).toLong()
