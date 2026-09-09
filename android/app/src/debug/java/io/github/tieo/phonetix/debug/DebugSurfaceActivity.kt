@@ -423,6 +423,10 @@ class DebugSurfaceActivity : androidx.activity.ComponentActivity() {
                 io.github.tieo.phonetix.service.PhonetixAccessibilityService.PUT_THEM_WRONG_BY =
                     i.getIntExtra("putThemWrongBy", 0).toFloat()
             }
+            if (i.hasExtra("probeTree")) {
+                io.github.tieo.phonetix.service.PhonetixAccessibilityService.PROBE_TREE =
+                    i.getIntExtra("probeTree", 0) != 0
+            }
             if (i.hasExtra("measureMovingMax")) {
                 io.github.tieo.phonetix.service.PhonetixAccessibilityService.MEASURE_MOVING_MAX =
                     i.getIntExtra("measureMovingMax", 0)
