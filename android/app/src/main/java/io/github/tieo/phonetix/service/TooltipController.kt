@@ -24,6 +24,7 @@ import io.github.tieo.phonetix.core.Answer
 import io.github.tieo.phonetix.core.Language
 import io.github.tieo.phonetix.core.Reading
 import io.github.tieo.phonetix.core.SettingsStore
+import io.github.tieo.phonetix.core.Accents
 import io.github.tieo.phonetix.core.Wiktionary
 import io.github.tieo.phonetix.core.IpaSymbols
 import io.github.tieo.phonetix.ui.AnswerCard
@@ -367,7 +368,9 @@ class TooltipController(
                     onPlay = {
                         val file = recorded.value
                         if (file != null) speaker.play(wikimediaFileUrl(file))
-                        else speaker.say(box.word)
+                        // In the voice the reader chose, which is the accent's where it has
+                        // one of its own and the language's otherwise.
+                        else speaker.say(box.word, Accents.voiceOf(source, settings.accent))
                     },
                 )
                 opened.value?.let { symbol ->
