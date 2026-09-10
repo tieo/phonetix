@@ -144,13 +144,14 @@ class DebugSurfaceActivity : androidx.activity.ComponentActivity() {
                                     io.github.tieo.phonetix.ui.AnswerCard(it, palette)
                                 }
                             }
-                            // The sound a symbol is, which is what a tap on one opens. Shown
-                            // beside the cards so the two read as one family rather than as
-                            // two designs.
+                            // The sound a symbol is, which is what a tap on one shows on the
+                            // card's own line for it. Drawn here on its own so the line can be
+                            // judged at every length of description it has to hold.
                             for (token in listOf("ʃ", "ŋ", "ɐ")) {
-                                io.github.tieo.phonetix.core.IpaSymbols.describe(token)?.let {
-                                    io.github.tieo.phonetix.ui.SymbolSheet(it, palette)
-                                }
+                                io.github.tieo.phonetix.ui.SoundLine(
+                                    io.github.tieo.phonetix.core.IpaSymbols.describe(token),
+                                    palette,
+                                )
                             }
                         }
                     }
