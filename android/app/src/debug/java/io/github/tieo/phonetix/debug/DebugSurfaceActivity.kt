@@ -557,6 +557,18 @@ class DebugSurfaceActivity : androidx.activity.ComponentActivity() {
                     i.getStringExtra("side").orEmpty(),
                 )
             }
+            // Where the mark waits, so a check can put it somewhere and see what follows.
+            if (i.hasExtra("pin")) {
+                io.github.tieo.phonetix.core.SettingsStore.setPin(
+                    i.getIntExtra("pin", 0) == 1,
+                )
+            }
+            if (i.hasExtra("pinX") && i.hasExtra("pinY")) {
+                io.github.tieo.phonetix.core.SettingsStore.setPinAt(
+                    i.getIntExtra("pinX", 50) / 100f,
+                    i.getIntExtra("pinY", 50) / 100f,
+                )
+            }
             if (i.hasExtra("packHost")) {
                 io.github.tieo.phonetix.core.SettingsStore.setPackHost(
                     i.getStringExtra("packHost").orEmpty(),
