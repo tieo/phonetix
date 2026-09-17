@@ -31,6 +31,10 @@ object StateDump {
 
     const val ACTION = "io.github.tieo.phonetix.DUMP"
 
+    /** Turn the tree probe on or off from outside, for one investigation on a real phone:
+     *  `am broadcast -a io.github.tieo.phonetix.PROBE --ez on true`. */
+    const val PROBE = "io.github.tieo.phonetix.PROBE"
+
     /** How many dumps are kept, so a phone left with this on does not fill up. */
     private const val KEEP = 20
 
