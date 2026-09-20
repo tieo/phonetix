@@ -610,6 +610,12 @@ class DebugSurfaceActivity : androidx.activity.ComponentActivity() {
                 )
 
             }
+            // Which language the reader is learning, which is what the panel answers in.
+            if (i.hasExtra("learning")) {
+                io.github.tieo.phonetix.core.SettingsStore.setLearning(
+                    i.getStringExtra("learning").orEmpty(),
+                )
+            }
             if (i.hasExtra("layer")) {
                 io.github.tieo.phonetix.core.SettingsStore.setLayer(
                     i.getStringExtra("layer").orEmpty(),
