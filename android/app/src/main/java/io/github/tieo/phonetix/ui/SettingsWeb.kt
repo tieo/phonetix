@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import io.github.tieo.phonetix.core.Interface
 import io.github.tieo.phonetix.core.Packs
 import io.github.tieo.phonetix.core.Reading
 import io.github.tieo.phonetix.core.Settings
@@ -292,7 +293,7 @@ private class Bridge(
         val arriving = missing != null &&
             io.github.tieo.phonetix.core.Fetch.inFlight().contains("model $missing")
         if (missing != null && settings.target.isNotEmpty() && !arriving) {
-            val named = missing.split('-').joinToString(" to ") { Languages.english(it) }
+            val named = missing.split('-').joinToString(" to ") { Interface.named(it) }
             wrong.add(Wording.says["no-direction"].orEmpty().replace("%s", named))
         }
         return wrong
